@@ -2,7 +2,7 @@ import lzma, os
 
 class FileWorker:
     def __init__(self,file_input:str,output_directory:str):
-        self._fin = file_input #what if it does not exist
+        self._fin = os.path.abspath(file_input) #what if it does not exist
         self._fout = file_input.split('/')[-1]
         self._dout = os.path.abspath(output_directory)
     
@@ -35,7 +35,7 @@ class FileWorker:
 
 class DirectoryWorker:
     def __init__(self,input_directory:str,output_directory:str()):
-        self._din = input_directory
+        self._din = os.path.abspath(input_directory)
         self._dout = os.path.abspath(output_directory)
     
     def _get_output_dir(self):
@@ -48,10 +48,19 @@ class DirectoryWorker:
     
     def compress(self):
         dout = self._get_output_dir()
-        len_dir_path = len(self._din)
         for root, _, files in os.walk(self._din):
             for file in files:
                 file_path = os.path.join(root, file)
                 w = FileWorker(file_path, os.path.join(dout,root))
                 print(w.compress())
+        return dout
+    
+    def decompress(self):
+        dout = self._get_output_dir()
+        for root, _, files in os.walk(self._din):
+            for file in files:
+                file_path = os.path.join(root, file)
+                print(file_path)
+                w = FileWorker(file_path, os.path.join(dout,root[len(self._din)+1:]))
+                print(w.decompress())
         return dout
